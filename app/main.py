@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from app.fraud.predict import simple_fraud_check
 from app.schemas.fraud import FraudRequest
+from app.sentiment.predict import simple_sentiment_check
+from app.schemas.sentiment import SentimentRequest
 
 app = FastAPI(title="Fin-Ops Sentinel")
 
@@ -23,4 +25,14 @@ def predict_fraud(request: FraudRequest):
         "amount": request.amount,
         "transaction_type": request.transaction_type,
         "fraud_risk": risk
+    }
+
+
+@app.post("/predict/sentiment")
+def predict_sentiment(request: SentimentRequest):
+    sentiment = simple_sentiment_check(request.text)
+
+    return {
+        "text": request.text,
+        "sentiment": sentiment
     }
