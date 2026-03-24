@@ -12,8 +12,15 @@ def home():
 
 @app.post("/predict/fraud")
 def predict_fraud(request: FraudRequest):
-    risk = simple_fraud_check(request.amount)
+    risk = simple_fraud_check(
+        amount=request.amount,
+        transaction_type=request.transaction_type,
+        old_balance_org=request.old_balance_org,
+        new_balance_org=request.new_balance_org,
+    )
+
     return {
         "amount": request.amount,
+        "transaction_type": request.transaction_type,
         "fraud_risk": risk
     }
