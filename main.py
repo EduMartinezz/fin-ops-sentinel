@@ -1,1 +1,0 @@
-print("Fin-Ops Sentinel project started")
