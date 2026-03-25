@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.fraud.predict import simple_fraud_check
+from app.fraud.predict import model_fraud_check
 from app.schemas.fraud import FraudRequest
 from app.sentiment.predict import simple_sentiment_check
 from app.schemas.sentiment import SentimentRequest
@@ -14,7 +14,7 @@ def home():
 
 @app.post("/predict/fraud")
 def predict_fraud(request: FraudRequest):
-    risk = simple_fraud_check(
+    risk = model_fraud_check(
         amount=request.amount,
         transaction_type=request.transaction_type,
         old_balance_org=request.old_balance_org,
