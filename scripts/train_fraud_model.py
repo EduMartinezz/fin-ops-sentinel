@@ -2,23 +2,23 @@ import os
 import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 
-# Load dataset (adjust filename if needed)
+# Load dataset
 file_path = "data/paysim dataset.csv"
 
 print("Loading dataset...")
 
-# Load only required columns (important!)
 data = pd.read_csv(
     file_path,
     usecols=["amount", "type", "oldbalanceOrg", "newbalanceOrig", "isFraud"],
-    nrows=100000  # LIMIT rows to avoid memory crash
+    nrows=100000
 )
 
 print("Dataset loaded:", data.shape)
 
-# Rename columns for consistency
+# Rename columns
 data = data.rename(columns={
     "type": "transaction_type",
     "oldbalanceOrg": "old_balance_org",
@@ -26,32 +26,49 @@ data = data.rename(columns={
     "isFraud": "is_fraud"
 })
 
-# One-hot encoding
+# Feature engineering
+data["balance_diff"] = data["old_balance_org"] - data["new_balance_org"]
+
+# Prepare features
 X = pd.get_dummies(
-    data[["amount", "transaction_type", "old_balance_org", "new_balance_org"]],
+    data[["amount", "transaction_type", "old_balance_org", "new_balance_org", "balance_diff"]],
     columns=["transaction_type"]
 )
 
 y = data["is_fraud"]
 
-# Train/test split
+print("\nFraud label counts:")
+print(y.value_counts())
+
+# Stratify keeps fraud ratio similar in train/test
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
 )
 
-# Train model
-print("Training model...")
-model = RandomForestClassifier(n_estimators=50, random_state=42)
+print("\nTraining model...")
+model = RandomForestClassifier(
+    n_estimators=150,
+    random_state=42,
+    class_weight="balanced"
+)
 model.fit(X_train, y_train)
 
 # Evaluate
-accuracy = model.score(X_test, y_test)
-print(f"Model accuracy: {accuracy:.4f}")
+y_pred = model.predict(X_test)
+
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred, digits=4))
 
 # Save model
 os.makedirs("models", exist_ok=True)
-
 joblib.dump(model, "models/fraud_model.joblib")
 joblib.dump(list(X.columns), "models/fraud_features.joblib")
 
-print("Model saved successfully.")
+print("\nModel and feature columns saved successfully.")

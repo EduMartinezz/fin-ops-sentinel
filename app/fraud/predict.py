@@ -13,4 +13,8 @@ def model_fraud_check(amount, transaction_type, old_balance_org, new_balance_org
     )
 
     prediction = model.predict(features)[0]
-    return "high_risk" if prediction == 1 else "low_risk"
+    probability = model.predict_proba(features)[0][1]
+
+    risk_label = "high_risk" if prediction == 1 else "low_risk"
+
+    return risk_label, float(probability)

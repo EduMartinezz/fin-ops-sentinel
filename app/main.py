@@ -14,7 +14,7 @@ def home():
 
 @app.post("/predict/fraud")
 def predict_fraud(request: FraudRequest):
-    risk = model_fraud_check(
+    risk, fraud_probability = model_fraud_check(
         amount=request.amount,
         transaction_type=request.transaction_type,
         old_balance_org=request.old_balance_org,
@@ -24,9 +24,9 @@ def predict_fraud(request: FraudRequest):
     return {
         "amount": request.amount,
         "transaction_type": request.transaction_type,
-        "fraud_risk": risk
+        "fraud_risk": risk,
+        "fraud_probability": round(fraud_probability, 4)
     }
-
 
 @app.post("/predict/sentiment")
 def predict_sentiment(request: SentimentRequest):

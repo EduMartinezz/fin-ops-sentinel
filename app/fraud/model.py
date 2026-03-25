@@ -8,12 +8,19 @@ def load_fraud_model():
     return model, feature_columns
 
 
-def prepare_fraud_features(amount, transaction_type, old_balance_org, new_balance_org, feature_columns):
+def prepare_fraud_features(
+    amount,
+    transaction_type,
+    old_balance_org,
+    new_balance_org,
+    feature_columns
+):
     input_df = pd.DataFrame([{
         "amount": amount,
         "transaction_type": transaction_type.upper(),
         "old_balance_org": old_balance_org,
         "new_balance_org": new_balance_org,
+        "balance_diff": old_balance_org - new_balance_org
     }])
 
     input_df = pd.get_dummies(input_df, columns=["transaction_type"])
