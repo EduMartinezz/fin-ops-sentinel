@@ -2,30 +2,56 @@ import os
 import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 
-# Small synthetic training data for proof of pipeline
-data = pd.DataFrame([
-    {"amount": 200, "transaction_type": "PAYMENT", "old_balance_org": 5000, "new_balance_org": 4800, "is_fraud": 0},
-    {"amount": 150000, "transaction_type": "TRANSFER", "old_balance_org": 200000, "new_balance_org": 50000, "is_fraud": 1},
-    {"amount": 80000, "transaction_type": "CASH_OUT", "old_balance_org": 90000, "new_balance_org": 0, "is_fraud": 1},
-    {"amount": 300, "transaction_type": "DEBIT", "old_balance_org": 1000, "new_balance_org": 700, "is_fraud": 0},
-    {"amount": 10000, "transaction_type": "TRANSFER", "old_balance_org": 50000, "new_balance_org": 40000, "is_fraud": 0},
-    {"amount": 120000, "transaction_type": "TRANSFER", "old_balance_org": 150000, "new_balance_org": 30000, "is_fraud": 1},
-])
+# Load dataset (adjust filename if needed)
+file_path = "data/paysim dataset.csv"
 
-# One-hot encode transaction type
+print("Loading dataset...")
+
+# Load only required columns (important!)
+data = pd.read_csv(
+    file_path,
+    usecols=["amount", "type", "oldbalanceOrg", "newbalanceOrig", "isFraud"],
+    nrows=100000  # LIMIT rows to avoid memory crash
+)
+
+print("Dataset loaded:", data.shape)
+
+# Rename columns for consistency
+data = data.rename(columns={
+    "type": "transaction_type",
+    "oldbalanceOrg": "old_balance_org",
+    "newbalanceOrig": "new_balance_org",
+    "isFraud": "is_fraud"
+})
+
+# One-hot encoding
 X = pd.get_dummies(
     data[["amount", "transaction_type", "old_balance_org", "new_balance_org"]],
     columns=["transaction_type"]
 )
+
 y = data["is_fraud"]
 
-model = RandomForestClassifier(random_state=42)
-model.fit(X, y)
+# Train/test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
+# Train model
+print("Training model...")
+model = RandomForestClassifier(n_estimators=50, random_state=42)
+model.fit(X_train, y_train)
+
+# Evaluate
+accuracy = model.score(X_test, y_test)
+print(f"Model accuracy: {accuracy:.4f}")
+
+# Save model
 os.makedirs("models", exist_ok=True)
 
 joblib.dump(model, "models/fraud_model.joblib")
 joblib.dump(list(X.columns), "models/fraud_features.joblib")
 
-print("Fraud model and feature columns saved successfully.")
+print("Model saved successfully.")
