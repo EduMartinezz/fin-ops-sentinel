@@ -22,6 +22,53 @@ This project is designed as a recruiter-facing portfolio project that highlights
 
 ---
 
+## System Architecture
+
+Fin-Ops Sentinel follows a modular API-first architecture for serving machine learning predictions in a production-style workflow.
+
+### High-Level Flow
+
+1. Client sends a request to a FastAPI endpoint  
+2. Request data is validated using Pydantic schemas  
+3. The relevant fraud or sentiment module processes the input  
+4. The model returns prediction results  
+5. The API formats the response into a structured JSON output  
+6. Docker provides a portable runtime environment for local deployment and demonstration
+
+### Architecture Summary
+
+- **FastAPI** handles routing and API documentation
+- **Pydantic** validates request payloads
+- **Fraud module** handles transaction preprocessing, scoring, and explanation generation
+- **Sentiment module** handles financial text sentiment inference
+- **Model artifacts** are loaded from the `models/` directory
+- **Docker** ensures consistent environment setup across machines
+
+### Request-to-Response Flow
+
+```text
+Client Request
+    │
+    ▼
+FastAPI Endpoint
+    │
+    ▼
+Pydantic Validation
+    │
+    ▼
+Prediction Module
+ ┌───────────────┬────────────────┐
+ │ Fraud Engine  │ Sentiment Engine │
+ └───────────────┴────────────────┘
+    │
+    ▼
+Model Inference / Rule Logic
+    │
+    ▼
+Structured JSON Response
+```
+---
+
 ## Why I Built This Project
 
 Many machine learning projects stop at model training inside notebooks. I wanted to build something closer to how AI systems are used in practice.
@@ -278,6 +325,23 @@ This project demonstrates:
 - Git-based version control
 - production-minded project structuring
 
+---
+
+## Business and Engineering Value
+
+This project is designed to reflect the kind of practical thinking needed in real AI-enabled products.
+
+From a business perspective, it shows how machine learning can support:
+- risk triage for suspicious transactions
+- operational decision support through interpretable outputs
+- sentiment-based monitoring of financial text signals
+
+From an engineering perspective, it demonstrates:
+- modular backend design
+- reusable prediction services
+- model-to-API integration
+- containerized deployment workflow
+- portfolio presentation with documentation and test evidence
 ---
 
 ## Future Improvements
