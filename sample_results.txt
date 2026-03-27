@@ -1,0 +1,66 @@
+FIN-OPS SENTINEL — SAMPLE API RESULTS
+
+==================================================
+TEST CASE 1 — SUSPICIOUS CASH-OUT TRANSACTION
+==================================================
+
+Input:
+{
+  "amount": 80000,
+  "transaction_type": "cash_out",
+  "old_balance_org": 90000,
+  "new_balance_org": 0
+}
+
+Output:
+{
+  "amount": 80000,
+  "transaction_type": "cash_out",
+  "fraud_risk": "medium_risk",
+  "fraud_probability": 0.58,
+  "reason": "Risk flagged due to high transaction amount, cash_out transaction pattern, model detected elevated fraud probability."
+}
+
+
+==================================================
+TEST CASE 2 — NORMAL PAYMENT TRANSACTION
+==================================================
+
+Input:
+{
+  "amount": 500,
+  "transaction_type": "payment",
+  "old_balance_org": 5000,
+  "new_balance_org": 4500
+}
+
+Output:
+{
+  "amount": 500,
+  "transaction_type": "payment",
+  "fraud_risk": "low_risk",
+  "fraud_probability": 0,
+  "reason": "Transaction shows low fraud indicators."
+}
+
+
+==================================================
+TEST CASE 3 — HIGH-VALUE TRANSFER TRANSACTION
+==================================================
+
+Input:
+{
+  "amount": 120000,
+  "transaction_type": "transfer",
+  "old_balance_org": 130000,
+  "new_balance_org": 0
+}
+
+Output:
+{
+  "amount": 120000,
+  "transaction_type": "transfer",
+  "fraud_risk": "medium_risk",
+  "fraud_probability": 0.4133,
+  "reason": "Risk flagged due to high transaction amount, transfer transaction pattern."
+}

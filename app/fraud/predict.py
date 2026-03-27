@@ -4,17 +4,39 @@ model, feature_columns = load_fraud_model()
 
 
 def model_fraud_check(amount, transaction_type, old_balance_org, new_balance_org):
-    features = prepare_fraud_features(
+    input_data = prepare_fraud_features(
         amount=amount,
         transaction_type=transaction_type,
         old_balance_org=old_balance_org,
         new_balance_org=new_balance_org,
-        feature_columns=feature_columns,
+        feature_columns=feature_columns
     )
 
-    prediction = model.predict(features)[0]
-    probability = model.predict_proba(features)[0][1]
+    fraud_probability = model.predict_proba(input_data)[0][1]
 
-    risk_label = "high_risk" if prediction == 1 else "low_risk"
+    if fraud_probability >= 0.7:
+        risk = "high_risk"
+    elif fraud_probability >= 0.4:
+        risk = "medium_risk"
+    else:
+        risk = "low_risk"
 
-    return risk_label, float(probability)
+    return risk, fraud_probability
+
+
+def generate_fraud_reason(amount, transaction_type, fraud_probability):
+    reasons = []
+
+    if amount >= 50000:
+        reasons.append("high transaction amount")
+
+    if transaction_type.lower() in ["cash_out", "transfer"]:
+        reasons.append(f"{transaction_type.lower()} transaction pattern")
+
+    if fraud_probability >= 0.5:
+        reasons.append("model detected elevated fraud probability")
+
+    if not reasons:
+        return "Transaction shows low fraud indicators."
+
+    return "Risk flagged due to " + ", ".join(reasons) + "."

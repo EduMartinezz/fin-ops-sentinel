@@ -1,15 +1,43 @@
 from fastapi import FastAPI
-from app.fraud.predict import model_fraud_check
+from app.fraud.predict import model_fraud_check, generate_fraud_reason
 from app.schemas.fraud import FraudRequest
-from app.sentiment.predict import simple_sentiment_check
+from app.sentiment.predict import finbert_sentiment_check
 from app.schemas.sentiment import SentimentRequest
+from app.sentiment.model import preload_finbert, get_finbert_error
 
-app = FastAPI(title="Fin-Ops Sentinel")
+app = FastAPI(
+    title="Fin-Ops Sentinel API",
+    description="AI-powered financial risk monitoring API for fraud detection and sentiment analysis.",
+    version="1.0.0"
+)
+
+
+@app.on_event("startup")
+def startup_event():
+    preload_finbert()
 
 
 @app.get("/")
 def home():
-    return {"message": "Fin-Ops Sentinel API is running"}
+    return {
+        "project": "Fin-Ops Sentinel API",
+        "status": "running",
+        "features": [
+            "fraud detection",
+            "fraud explanation generation",
+            "financial sentiment analysis"
+        ],
+        "docs_url": "/docs"
+    }
+
+
+@app.get("/health/sentiment")
+def sentiment_health():
+    error = get_finbert_error()
+    return {
+        "finbert_loaded": error is None,
+        "finbert_error": error
+    }
 
 
 @app.post("/predict/fraud")
@@ -21,18 +49,28 @@ def predict_fraud(request: FraudRequest):
         new_balance_org=request.new_balance_org,
     )
 
+    reason = generate_fraud_reason(
+        amount=request.amount,
+        transaction_type=request.transaction_type,
+        fraud_probability=fraud_probability
+    )
+
     return {
         "amount": request.amount,
         "transaction_type": request.transaction_type,
         "fraud_risk": risk,
-        "fraud_probability": round(fraud_probability, 4)
+        "fraud_probability": round(fraud_probability, 4),
+        "reason": reason
     }
+
 
 @app.post("/predict/sentiment")
 def predict_sentiment(request: SentimentRequest):
-    sentiment = simple_sentiment_check(request.text)
+    sentiment, confidence, source = finbert_sentiment_check(request.text)
 
     return {
         "text": request.text,
-        "sentiment": sentiment
+        "sentiment": sentiment,
+        "confidence": round(confidence, 4) if confidence is not None else None,
+        "source": source
     }

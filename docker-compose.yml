@@ -1,0 +1,6 @@
+services:
+  fin-ops-sentinel:
+    build: .
+    container_name: fin-ops-sentinel-api
+    ports:
+      - "8000:8000"
