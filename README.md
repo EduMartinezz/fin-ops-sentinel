@@ -253,18 +253,19 @@ http://127.0.0.1:8000/docs
 
 ## Screenshots
 
-Store project screenshots in the `screenshots/` folder, such as:
+### API Documentation (Swagger UI)
+![API Docs](screenshots/docs-home.PNG)
 
-- API docs homepage
-- fraud prediction request example
-- fraud prediction response example
-- root endpoint response
+### Fraud Prediction Request
+![Fraud Request](screenshots/fraud-request.PNG)
 
-These help recruiters quickly understand the project without needing to run it locally.
+### Fraud Prediction Response
+![Fraud Response](screenshots/fraud-response.PNG)
+
+### Root Endpoint Response
+![Home Endpoint](screenshots/home-endpoint.PNG)
 
 ---
-
-## Recruiter-Relevant Skills Demonstrated
 
 This project demonstrates:
 
