@@ -8,17 +8,14 @@ Input:
 {
   "amount": 80000,
   "transaction_type": "cash_out",
-  "old_balance_org": 90000,
-  "new_balance_org": 0
-}
-
-Output:
-{
-  "amount": 80000,
-  "transaction_type": "cash_out",
   "fraud_risk": "medium_risk",
   "fraud_probability": 0.58,
-  "reason": "Risk flagged due to high transaction amount, cash_out transaction pattern, model detected elevated fraud probability."
+  "reason": "Risk flagged due to high transaction amount, cash_out transaction pattern, model detected elevated fraud probability.",
+  "risk_factors": {
+    "amount_risk": "high",
+    "transaction_pattern": "risky",
+    "model_confidence": "medium"
+  }
 }
 
 

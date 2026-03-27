@@ -40,3 +40,28 @@ def generate_fraud_reason(amount, transaction_type, fraud_probability):
         return "Transaction shows low fraud indicators."
 
     return "Risk flagged due to " + ", ".join(reasons) + "."
+
+
+def generate_risk_factors(amount, transaction_type, fraud_probability):
+    factors = {}
+
+    if amount >= 50000:
+        factors["amount_risk"] = "high"
+    elif amount >= 10000:
+        factors["amount_risk"] = "medium"
+    else:
+        factors["amount_risk"] = "low"
+
+    if transaction_type.lower() in ["cash_out", "transfer"]:
+        factors["transaction_pattern"] = "risky"
+    else:
+        factors["transaction_pattern"] = "normal"
+
+    if fraud_probability >= 0.7:
+        factors["model_confidence"] = "high"
+    elif fraud_probability >= 0.4:
+        factors["model_confidence"] = "medium"
+    else:
+        factors["model_confidence"] = "low"
+
+    return factors

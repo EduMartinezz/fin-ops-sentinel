@@ -1,9 +1,9 @@
 from fastapi import FastAPI
-from app.fraud.predict import model_fraud_check, generate_fraud_reason
 from app.schemas.fraud import FraudRequest
 from app.sentiment.predict import finbert_sentiment_check
 from app.schemas.sentiment import SentimentRequest
 from app.sentiment.model import preload_finbert, get_finbert_error
+from app.fraud.predict import model_fraud_check,generate_fraud_reason,generate_risk_factors
 
 app = FastAPI(
     title="Fin-Ops Sentinel API",
@@ -55,14 +55,20 @@ def predict_fraud(request: FraudRequest):
         fraud_probability=fraud_probability
     )
 
+    risk_factors = generate_risk_factors(
+        amount=request.amount,
+        transaction_type=request.transaction_type,
+        fraud_probability=fraud_probability
+    )
+
     return {
         "amount": request.amount,
         "transaction_type": request.transaction_type,
         "fraud_risk": risk,
         "fraud_probability": round(fraud_probability, 4),
-        "reason": reason
+        "reason": reason,
+        "risk_factors": risk_factors
     }
-
 
 @app.post("/predict/sentiment")
 def predict_sentiment(request: SentimentRequest):

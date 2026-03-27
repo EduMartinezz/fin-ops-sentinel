@@ -209,7 +209,12 @@ Accepts transaction input and returns fraud prediction results.
   "transaction_type": "cash_out",
   "fraud_risk": "medium_risk",
   "fraud_probability": 0.58,
-  "reason": "Risk flagged due to high transaction amount, cash_out transaction pattern, model detected elevated fraud probability."
+  "reason": "Risk flagged due to high transaction amount, cash_out transaction pattern, model detected elevated fraud probability.",
+  "risk_factors": {
+    "amount_risk": "high",
+    "transaction_pattern": "risky",
+    "model_confidence": "medium"
+  }
 }
 ```
 
